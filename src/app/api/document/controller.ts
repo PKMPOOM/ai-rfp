@@ -1,4 +1,4 @@
-import { DocumentSection, SaveDocumentPayload } from "@/type/document";
+import { SaveDocumentPayload } from "@/type/document";
 import { prisma } from "@/utils/prisma";
 
 const saveDocument = async (docData: SaveDocumentPayload) => {

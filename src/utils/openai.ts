@@ -29,6 +29,8 @@ export class CustomAI {
   }
 
   async createMultipleEmbeddings(texts: string[]) {
+    console.log(texts);
+
     const { embeddings } = await embedMany({
       model: this.embedingsModel,
       values: ["sunny day at the beach", "rainy afternoon in the city"],

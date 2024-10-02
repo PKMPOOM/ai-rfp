@@ -1,13 +1,12 @@
 "use client";
 
 import { useGlobalStore } from "@/store/globalStore";
-import { Badge, Button, Drawer, Form, Input, Tag, Typography } from "antd";
-import { useEffect } from "react";
-import { useShallow } from "zustand/shallow";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
 import EyeOutlined from "@ant-design/icons/EyeOutlined";
-import MarkdownPreview from "@uiw/react-markdown-preview";
+import { Button, Drawer, Form, Input, Tag, Typography } from "antd";
+import { useEffect } from "react";
+import { useShallow } from "zustand/shallow";
 import EditDocumentDrawer from "./EditDocumentDrawer";
 
 type FormSchema = {
@@ -159,16 +158,16 @@ const AddDocumentModal = () => {
           to acquaint you with our trust-based hybrid culture, emphasizing
           agility and environmental sustainability. This model reduces commuting
           emissions, conserves energy and water, and prioritizes digital
-          platforms for client research. Our office, situated in Saskatoon's
-          City Park neighbourhood, is part of a vibrant community with access to
-          transit. We offer eco-friendly commuting options such as bike storage,
-          lockers, and shower facilities. Additionally, we operate a remote call
-          centre with all employees based in Saskatchewan, reflecting our
-          commitment to both the community and environmental responsibility. Our
-          professionals manage projects through daily interactions using a
-          combination of technology and in-person meetings. Our office
-          environment blends modern technology with welcoming meeting spaces,
-          fostering creativity and problem-solving, supported by
+          platforms for client research. Our office, situated in Saskatoon
+          `&apos;` s City Park neighbourhood, is part of a vibrant community
+          with access to transit. We offer eco-friendly commuting options such
+          as bike storage, lockers, and shower facilities. Additionally, we
+          operate a remote call centre with all employees based in Saskatchewan,
+          reflecting our commitment to both the community and environmental
+          responsibility. Our professionals manage projects through daily
+          interactions using a combination of technology and in-person meetings.
+          Our office environment blends modern technology with welcoming meeting
+          spaces, fostering creativity and problem-solving, supported by
           state-of-the-art video conferencing and flexible hot desks. For more
           information on our sustainability initiatives, please refer to our
           Sustainable Community Strategy later in this proposal.

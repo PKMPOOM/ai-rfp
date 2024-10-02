@@ -1,10 +1,8 @@
-import { appAI } from "@/utils/openai";
-import { performVectorSearch } from "@/utils/supabase";
-import { cosineDistance, desc, gt, sql } from "drizzle-orm";
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
-import { documents } from "../../../../schema/schema";
 import { db } from "@/utils/drizzle";
+import { appAI } from "@/utils/openai";
+import { cosineDistance, desc, gt, sql } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+import { documents } from "../../../../schema/schema";
 
 export async function GET(req: NextRequest) {
   const query = req.nextUrl.searchParams.get("query");

@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request) {
+export async function GET() {
   const data = await db.query.proposal.findFirst({
     where: (data, { eq }) => eq(data.name, "test"),
     with: {

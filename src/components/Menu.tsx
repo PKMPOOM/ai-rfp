@@ -6,8 +6,8 @@ import PlusOutlined from "@ant-design/icons/PlusOutlined";
 import type { MenuProps } from "antd";
 import { Button, Dropdown, Input } from "antd";
 import React, { useEffect } from "react";
-import AddDocumentModal from "./AddDocumentModal";
 import { useShallow } from "zustand/shallow";
+import AddDocumentModal from "./AddDocumentModal";
 
 const items: MenuProps["items"] = [
   {
@@ -23,7 +23,7 @@ const items: MenuProps["items"] = [
 ];
 
 const SideMenu = () => {
-  const { documentID, modalOpen, setDocumentID, setModalOpen } = useGlobalStore(
+  const { setModalOpen } = useGlobalStore(
     useShallow((state) => ({
       documentID: state.documentID,
       modalOpen: state.mainDrawerOpen,
@@ -60,7 +60,7 @@ const SideMenu = () => {
           width: "100%",
         }}
         buttonsRender={([_, rightButton]) => [
-          <Button onClick={setReferences} block>
+          <Button key={"rightbtn"} onClick={setReferences} block>
             Library
           </Button>,
           React.cloneElement(

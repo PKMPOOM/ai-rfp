@@ -1,13 +1,9 @@
 import { useGlobalStore } from "@/store/globalStore";
-import { Button, Drawer, Form, Input, Select, Tag, Typography } from "antd";
-import React from "react";
+import { Button, Drawer, Form, Input } from "antd";
 import { useShallow } from "zustand/shallow";
 import { saveSection } from "./api";
-import { DocumentSection, SaveDocumentPayload } from "@/type/document";
 
-type Props = {};
-
-const EditDocumentDrawer = (props: Props) => {
+const EditDocumentDrawer = () => {
   const [form] = Form.useForm();
   const { editDrawerOpen, setEditDrawerOpen } = useGlobalStore(
     useShallow((state) => ({
