@@ -1,5 +1,12 @@
 import { createOpenAI, OpenAIProvider } from "@ai-sdk/openai";
-import { embed, EmbeddingModel, embedMany } from "ai";
+import {
+  embed,
+  EmbeddingModel,
+  embedMany,
+  streamText,
+  convertToCoreMessages,
+  CoreMessage,
+} from "ai";
 
 const apiKey = process.env.OPENAI_API_KEY;
 
@@ -20,7 +27,7 @@ export class CustomAI {
     this.embedingsModel = model.embedding("text-embedding-ada-002");
   }
 
-  createEmbedding(text: string) {
+  async createEmbedding(text: string) {
     return embed({
       model: this.textModel.embedding("text-embedding-ada-002"),
       value: text.replaceAll("\n", " "),
@@ -29,14 +36,23 @@ export class CustomAI {
   }
 
   async createMultipleEmbeddings(texts: string[]) {
-    console.log(texts);
-
     const { embeddings } = await embedMany({
       model: this.embedingsModel,
       values: ["sunny day at the beach", "rainy afternoon in the city"],
     });
 
     return embeddings;
+  }
+
+  createCompletion(CoreMessage: CoreMessage[]) {
+    return streamText({
+      model: this.textModel("gpt-4o"),
+      // prompt: text,
+      messages: CoreMessage,
+      maxTokens: 4000,
+      maxSteps: 5, // enable multi-step calls
+      experimental_continueSteps: true,
+    });
   }
 
   setContext = (context: string) => (this.context = context);

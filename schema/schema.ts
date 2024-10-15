@@ -1,14 +1,13 @@
-import {
-  pgTable,
-  foreignKey,
-  serial,
-  text,
-  vector,
-  timestamp,
-  bigint,
-  bigserial,
-} from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import {
+  bigint,
+  foreignKey,
+  pgTable,
+  text,
+  timestamp,
+  vector,
+  serial,
+} from "drizzle-orm/pg-core";
 
 export const documents = pgTable(
   "documents",
@@ -24,8 +23,8 @@ export const documents = pgTable(
     })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     proposalId: bigint("proposalId", { mode: "number" }),
+    proposalUuid: text("proposalUuid"),
     updatedAt: timestamp("updated_at", {
       precision: 6,
       withTimezone: true,
@@ -48,7 +47,7 @@ export const documents = pgTable(
 );
 
 export const proposal = pgTable("Proposal", {
-  id: bigserial("id", { mode: "bigint" }).primaryKey().notNull(),
+  id: serial("id").primaryKey().notNull(),
   uuid: text("uuid").notNull().default(crypto.randomUUID()),
   name: text("name").default("proposal").notNull(),
   createdAt: timestamp("created_at", {

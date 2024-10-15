@@ -1,18 +1,13 @@
 import { db } from "@/utils/drizzle";
-import { appAI } from "@/utils/openai";
+import { count, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { documents } from "../../../../schema/schema";
+import { documents, proposal } from "../../../../schema/schema";
+import { documentController } from "./controller";
 
 export async function POST(req: Request) {
-  const { body, title } = await req.json();
+  const { name } = await req.json();
   try {
-    const { embedding } = await appAI.createEmbedding(title + body);
-
-    await db.insert(documents).values({
-      body,
-      title,
-      embedding,
-    });
+    await documentController.saveDocument(name);
 
     return NextResponse.json({ status: 200 });
   } catch (error) {
@@ -21,26 +16,23 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  const data = await db.query.proposal.findFirst({
-    where: (data, { eq }) => eq(data.name, "test"),
-    with: {
-      documents: {
-        columns: {
-          id: true,
-          title: true,
-          body: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
-    },
-  });
+  try {
+    const proposalList = await db
+      .select({
+        id: proposal.id,
+        title: proposal.name,
+        create_at: proposal.createdAt,
+        update_at: proposal.updatedAt,
+        uuid: proposal.uuid,
+        documents: count(documents.id),
+      })
+      .from(proposal)
+      .leftJoin(documents, eq(proposal.id, documents.proposalId))
+      .groupBy(proposal.id)
+      .orderBy(proposal.createdAt);
 
-  const bigIntFix = JSON.parse(
-    JSON.stringify(data, (_, value) =>
-      typeof value === "bigint" ? value.toString() : value,
-    ),
-  );
-
-  return NextResponse.json(bigIntFix);
+    return NextResponse.json(proposalList);
+  } catch (error) {
+    return NextResponse.json({ status: 500, error });
+  }
 }

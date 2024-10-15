@@ -2,23 +2,46 @@ import { useGlobalStore } from "@/store/globalStore";
 import { Button, Drawer, Form, Input } from "antd";
 import { useShallow } from "zustand/shallow";
 import { saveSection } from "./api";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 const EditDocumentDrawer = () => {
   const [form] = Form.useForm();
-  const { editDrawerOpen, setEditDrawerOpen } = useGlobalStore(
+  const queryclient = useQueryClient();
+  const [Loading, setLoading] = useState(false);
+  const { editDrawerOpen, setEditDrawerOpen, proposalId } = useGlobalStore(
     useShallow((state) => ({
       editDrawerOpen: state.editDrawerOpen,
       setEditDrawerOpen: state.setEditDrawerOpen,
+      proposalId: state.documentID,
     })),
   );
 
   const onFinish = async (event: any) => {
-    const res = await saveSection({
-      body: event.doc_content,
-      title: event.doc_name,
-    });
+    try {
+      console.log({
+        body: event.doc_content,
+        title: event.doc_name,
+        proposalId,
+      });
 
-    console.log(res);
+      setLoading(true);
+      await saveSection(
+        {
+          body: event.doc_content,
+          title: event.doc_name,
+        },
+        proposalId,
+      );
+
+      setLoading(false);
+      closeDrawer();
+      form.resetFields();
+      queryclient.invalidateQueries({ queryKey: [`proposal-${proposalId}`] });
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
   };
 
   const closeDrawer = () => {
@@ -64,7 +87,7 @@ const EditDocumentDrawer = () => {
           <div className="flex gap-2">
             <div className="flex flex-row justify-end gap-2">
               <Button onClick={closeDrawer}>Cancel</Button>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={Loading}>
                 <span className="px-14">Add</span>
               </Button>
             </div>

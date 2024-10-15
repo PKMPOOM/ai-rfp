@@ -1,81 +1,141 @@
 "use client";
 
 import { useGlobalStore } from "@/store/globalStore";
-import EyeOutlined from "@ant-design/icons/EyeOutlined";
-import PlusOutlined from "@ant-design/icons/PlusOutlined";
-import type { MenuProps } from "antd";
-import { Button, Dropdown, Input } from "antd";
-import React, { useEffect } from "react";
+import {
+  Button,
+  Form,
+  Input,
+  message,
+  Modal,
+  Skeleton,
+  Typography,
+} from "antd";
+import { useEffect, useState } from "react";
 import { useShallow } from "zustand/shallow";
-import AddDocumentModal from "./AddDocumentModal";
+import AddDocumentModal from "./DocumentModal";
+import { createNewProposal, getProposalList } from "./api";
 
-const items: MenuProps["items"] = [
-  {
-    label: "Add Document",
-    key: "addreference",
-    icon: <PlusOutlined />,
-  },
-  {
-    label: "View Document",
-    key: "viewdocument",
-    icon: <EyeOutlined />,
-  },
-];
+type FormSchema = {
+  doc_name: string;
+};
 
 const SideMenu = () => {
-  const { setModalOpen } = useGlobalStore(
+  const [messageAPI, contextHolder] = message.useMessage();
+
+  const [form] = Form.useForm<FormSchema>();
+  const [CreateModalOpen, setCreateModalOpen] = useState(false);
+  const [Loading, setLoading] = useState(false);
+  const { setDocumentID, documentID } = useGlobalStore(
     useShallow((state) => ({
-      documentID: state.documentID,
-      modalOpen: state.mainDrawerOpen,
-      setModalOpen: state.setMainDrawerOpen,
       setDocumentID: state.setDocumentID,
+      documentID: state.documentID,
     })),
   );
+
+  const { data, isLoading, refetch } = getProposalList();
 
   useEffect(() => {
     if (document) {
       document.documentElement.setAttribute("data-color-mode", "light");
     }
+
+    return () => {
+      form.resetFields();
+    };
   }, []);
 
-  const setReferences = () => {
-    console.log("setReferences");
-  };
-
-  const handleMenuClick: MenuProps["onClick"] = (e) => {
-    if (e.key === "addreference") {
-      setModalOpen(true);
+  const onFinish = async (values: FormSchema) => {
+    try {
+      setLoading(true);
+      await createNewProposal(values.doc_name);
+      setCreateModalOpen(false);
+      refetch();
+      form.resetFields();
+      messageAPI.success("Proposal created successfully");
+    } catch (error) {
+      console.log(error);
     }
+    setLoading(false);
   };
 
   return (
-    <div className="flex h-full w-[200px] flex-col gap-2">
+    <div className="flex h-full w-[250px] flex-col gap-2 rounded-xl bg-white p-2">
+      {contextHolder}
       <Input.Search placeholder="Search" />
-      <Dropdown.Button
-        menu={{
-          items,
-          onClick: handleMenuClick,
-        }}
-        style={{
-          width: "100%",
-        }}
-        buttonsRender={([_, rightButton]) => [
-          <Button key={"rightbtn"} onClick={setReferences} block>
-            Library
-          </Button>,
-          React.cloneElement(
-            rightButton as React.ReactElement<any, string>,
-            {},
-          ),
-          ,
-        ]}
-      ></Dropdown.Button>
 
-      <AddDocumentModal />
-
-      {/* {Array.from({ length: 10 }).map((_, i) => {
-        return <div key={i}>{i}</div>;
-      })} */}
+      <Button
+        type="primary"
+        key={"rightbtn"}
+        onClick={() => {
+          setCreateModalOpen(true);
+        }}
+        block
+      >
+        + Proposal
+      </Button>
+      <Typography.Title level={5}>Latest</Typography.Title>
+      <div className="flex flex-1 flex-col gap-2">
+        {isLoading && !data ? (
+          <div className="flex flex-col gap-4">
+            <Skeleton />
+            <Skeleton />
+            <Skeleton />
+          </div>
+        ) : (
+          data?.map((proposal) => {
+            return (
+              <div
+                key={proposal.id}
+                onClick={() => {
+                  setDocumentID(`${proposal.id}`);
+                }}
+                className="flex cursor-pointer flex-col justify-between rounded-md border p-2 transition-all duration-150 hover:bg-white hover:shadow-lg"
+              >
+                <Typography.Text>{proposal.title}</Typography.Text>
+                <Typography.Text type="secondary">
+                  Docs: {proposal.documents}
+                </Typography.Text>
+              </div>
+            );
+          })
+        )}
+      </div>
+      <AddDocumentModal listRefetch={refetch} />
+      <Modal
+        onCancel={() => {
+          setCreateModalOpen(false);
+        }}
+        open={CreateModalOpen}
+        title={"Create New Proposal"}
+        footer={null}
+      >
+        <Form form={form} onFinish={onFinish}>
+          <Form.Item<FormSchema>
+            name={"doc_name"}
+            rules={[
+              {
+                required: true,
+                message: "Please enter a proposal name",
+              },
+            ]}
+          >
+            <Input placeholder="Proposal name" />
+          </Form.Item>
+          <div className="flex justify-end gap-2">
+            <Button
+              type="text"
+              onClick={() => {
+                setCreateModalOpen(false);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button loading={Loading} type="primary" htmlType="submit">
+              <span>Save</span>
+            </Button>
+          </div>
+        </Form>
+      </Modal>
     </div>
   );
 };
