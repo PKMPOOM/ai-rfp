@@ -7,15 +7,24 @@ export type Proposal = {
   documents: DocumentSection[];
 };
 
-export type DocumentSection = {
-  id: string;
-  created_at: Date;
-  title: string;
-  body: string;
-  embeddeds: string[];
-};
-
 export type SaveDocumentPayload = Omit<
   DocumentSection,
-  "id" | "created_at" | "embeddeds"
+  "id" | "createdAt" | "embeddeds" | "updatedAt"
 >;
+
+export interface DocumentSection {
+  id: number;
+  title: string;
+  body: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type proposalList = {
+  id: number;
+  title: string;
+  create_at: string;
+  update_at: string;
+  uuid: string;
+  documents: number;
+}[];

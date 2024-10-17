@@ -1,15 +1,12 @@
-import { SaveDocumentPayload } from "@/type/document";
-import { prisma } from "@/utils/prisma";
+import { db } from "@/utils/drizzle";
+import { proposal } from "../../../../schema/schema";
 
-const saveDocument = async (docData: SaveDocumentPayload) => {
-  await prisma.documents.create({
-    data: {
-      body: docData.body,
-      title: docData.title,
-    },
+const saveProposal = async (name: string) => {
+  await db.insert(proposal).values({
+    name,
   });
 };
 
 export const documentController = {
-  saveDocument,
+  saveDocument: saveProposal,
 };
