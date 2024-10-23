@@ -2,14 +2,13 @@
 
 import type { MenuProps } from "antd";
 import { Button, Dropdown } from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import QuestionCard from "./QuestionCard";
 import EditOutlined from "@ant-design/icons/EditOutlined";
 import ContextModal from "./modal/ContextModal";
 import { ReqModalMode, useGenerativeStore } from "@/store/generativeStore";
 import { useShallow } from "zustand/shallow";
 import AddRequirementModal from "./modal/AddRequirementModal";
-
 const items: MenuProps["items"] = [
   {
     label: "Bulk Add Requirement",
@@ -24,22 +23,49 @@ const QuestionPane = () => {
     setRequirementModalOpen,
     setRequirementModalMode,
     requirementList,
-    saveListToLocalStorage,
+    setRequirementList,
+    setAIContext,
   ] = useGenerativeStore(
     useShallow((state) => [
       state.setContextModalOpen,
       state.setRequirementModalOpen,
       state.setRequirementModalMode,
       state.requirementList,
-      state.saveListToLocalStorage,
+      state.setRequirementList,
+      state.setAIContext,
     ]),
   );
+  const childRef = useRef<HTMLDivElement>(null);
+  const parentRef = useRef<HTMLDivElement>(null);
+
+  const getinitialState = () => {
+    if (typeof window !== "undefined") {
+      const localStore = localStorage.getItem("requirementList");
+      if (localStore) {
+        return JSON.parse(localStore);
+      } else {
+        return [];
+      }
+    }
+  };
+
+  const getinitialContextState = () => {
+    if (typeof window !== "undefined") {
+      const localStore = localStorage.getItem("aiContext");
+      if (localStore) {
+        return localStore;
+      } else {
+        return "";
+      }
+    } else {
+      return "";
+    }
+  };
 
   useEffect(() => {
-    if (requirementList) {
-      saveListToLocalStorage(requirementList);
-    }
-  }, [requirementList]);
+    setRequirementList(getinitialState());
+    setAIContext(getinitialContextState());
+  }, []);
 
   const handleMenuClick = (mode: ReqModalMode) => {
     setRequirementModalMode(mode);
@@ -50,8 +76,18 @@ const QuestionPane = () => {
     setContextModalOpen(true);
   };
 
+  useEffect(() => {
+    if (childRef.current && parentRef.current) {
+      // Scroll the parent to bring the child into view
+      childRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [childRef]); // You can add dependencies as needed
+
   return (
-    <div className="flex h-full flex-1 flex-col gap-2 overflow-y-auto rounded-xl bg-white p-2">
+    <div
+      ref={parentRef}
+      className="flex h-full flex-1 flex-col gap-2 overflow-y-auto rounded-xl bg-white p-2"
+    >
       <div className="flex flex-col gap-4">
         <div className="flex justify-end gap-2">
           <Button onClick={openContextModal}>Generative context</Button>
@@ -71,16 +107,18 @@ const QuestionPane = () => {
           </Dropdown.Button>
         </div>
 
-        {requirementList?.map((question, index) => {
-          return (
-            <QuestionCard
-              index={index}
-              description={question.description}
-              section={question.section}
-              key={question.section}
-            />
-          );
-        })}
+        {requirementList &&
+          requirementList.map((question, index) => {
+            return (
+              <QuestionCard
+                ref={childRef}
+                index={index}
+                description={question.description}
+                section={question.section}
+                key={question.section}
+              />
+            );
+          })}
       </div>
       <ContextModal />
       <AddRequirementModal />

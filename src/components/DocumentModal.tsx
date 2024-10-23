@@ -1,16 +1,16 @@
 "use client";
 
+import { useMessage } from "@/context/Provider";
 import { useGlobalStore } from "@/store/globalStore";
 import DeleteOutlined from "@ant-design/icons/DeleteOutlined";
 import EditOutlined from "@ant-design/icons/EditOutlined";
 import LoadingOutlined from "@ant-design/icons/LoadingOutlined";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button, Drawer, Form, Input, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import EditDocumentDrawer from "./EditDocumentDrawer";
 import { getProposal, updateProposalName } from "./api";
-import { useQueryClient } from "@tanstack/react-query";
-import { useMessage } from "@/context/Provider";
 
 type FormSchema = {
   doc_name: string;
@@ -22,21 +22,15 @@ const AddDocumentModal = ({}: { listRefetch: () => void }) => {
   const queryclient = useQueryClient();
   const { messageAPI } = useMessage();
 
-  const {
-    setModalOpen,
-    documentId,
-    modalOpen,
-    setEditDrawerOpen,
-    setDocumentID,
-  } = useGlobalStore(
-    useShallow((state) => ({
-      setModalOpen: state.setMainDrawerOpen,
-      documentId: state.documentID,
-      modalOpen: state.mainDrawerOpen,
-      setEditDrawerOpen: state.setEditDrawerOpen,
-      setDocumentID: state.setDocumentID,
-    })),
-  );
+  const { setModalOpen, documentId, setEditDrawerOpen, setDocumentID } =
+    useGlobalStore(
+      useShallow((state) => ({
+        setModalOpen: state.setMainDrawerOpen,
+        documentId: state.documentID,
+        setEditDrawerOpen: state.setEditDrawerOpen,
+        setDocumentID: state.setDocumentID,
+      })),
+    );
 
   const { data } = getProposal(documentId);
 

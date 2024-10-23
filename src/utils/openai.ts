@@ -46,10 +46,10 @@ export class CustomAI {
 
   createCompletion(CoreMessage: CoreMessage[]) {
     return streamText({
-      model: this.textModel("gpt-4o"),
+      model: this.textModel("gpt-4o-mini"),
       // prompt: text,
       messages: CoreMessage,
-      maxTokens: 4000,
+      maxTokens: 10000,
       maxSteps: 5, // enable multi-step calls
       experimental_continueSteps: true,
     });

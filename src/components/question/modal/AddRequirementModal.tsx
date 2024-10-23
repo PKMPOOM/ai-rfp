@@ -50,7 +50,9 @@ const AddRequirementModal = () => {
       description: e.description,
       section: e.question,
     };
-    setRequirementList([...(requirementList ?? []), newSection]);
+    const newRequirementList = [...(requirementList ?? []), newSection];
+    setRequirementList(newRequirementList);
+    localStorage.setItem("requirementList", JSON.stringify(newRequirementList));
     onClose();
     singleForm.resetFields();
   };
