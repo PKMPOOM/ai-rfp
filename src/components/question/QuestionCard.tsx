@@ -81,4 +81,6 @@ const QuestionCard = forwardRef<HTMLDivElement, Props>(
   },
 );
 
+QuestionCard.displayName = "QuestionCard";
+
 export default QuestionCard;
