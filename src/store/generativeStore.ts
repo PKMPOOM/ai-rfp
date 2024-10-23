@@ -1,5 +1,4 @@
 import { create } from "zustand";
-// I developed a proposal database where I can search and add questions to the front end. From there, an API searches through the vector database using AI embeddings. Once the top 5 most similar results are retrieved, they serve as references for AI generation. This process allows the AI to have better context, ultimately producing more accurate and relevant responses.
 
 // const questionDummy = [
 //   {
@@ -55,23 +54,12 @@ type action = {
   saveListToLocalStorage: (list: requirement[]) => void;
 };
 
-const getinitialState = () => {
-  if (typeof window !== "undefined") {
-    const localStore = localStorage.getItem("requirementList");
-    if (localStore) {
-      return JSON.parse(localStore);
-    } else {
-      return [];
-    }
-  }
-};
-
 export const useGenerativeStore = create<state & action>((set) => ({
   clientName: "",
   aiContext: "",
   requirementModalOpen: false,
   bulkRequirementModalOpen: false,
-  requirementList: getinitialState(),
+  requirementList: [],
   contextModalOpen: false,
   requirementModalMode: "single",
 

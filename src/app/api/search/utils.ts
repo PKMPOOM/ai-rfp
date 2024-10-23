@@ -18,7 +18,12 @@ export const vectorSearch = async (embedding: any) => {
       .orderBy((t) => desc(t.similarity))
       .limit(3);
 
-    return similar;
+    const mapped = similar.map((s) => ({
+      title: s.title,
+      body: s.body.replace(/\n/gm, ""),
+    }));
+
+    return mapped;
   } catch (error) {
     console.log(error);
     throw new Error("Error in getVector");

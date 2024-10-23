@@ -5,6 +5,11 @@ import { vectorSearch } from "../search/utils";
 
 export async function POST(req: Request) {
   const { prompt } = await req.json();
+
+  const parsed = JSON.parse(prompt);
+
+  console.log(parsed["userProvidedContext"]);
+
   try {
     // search for similar vector
     const { embedding } = await appAI.createEmbedding(prompt);
@@ -26,41 +31,41 @@ export async function POST(req: Request) {
         role: "system",
         content: `You are a detailed proposal section writer who creates comprehensive responses based on extensive reference materials. Your task is to generate in-depth answers that fully utilize the reference content (typically 700+ words per reference) while maintaining appropriate templating and professional standards.
       
-      Key Instructions:
-      - Generate detailed responses that match or exceed the depth of references
-      - Thoroughly analyze and incorporate approaches from all provided references
-      - Replace company names with ${CLIENT_COMPANY} throughout
-      - Maintain the extensive detail level present in reference materials
-      - Ensure comprehensive coverage of methodologies, processes, and outcomes
-      
-      Content Generation Rules:
-      1. Length and Depth:
-         - Aim for comprehensive responses that match reference length
-         - Include all relevant details, processes, and methodologies
-         - Maintain detailed explanations of approaches
-         - Provide thorough coverage of implementation steps
-         - Include specific metrics and examples where present in references
-      
-      2. Reference Utilization:
-         - Thoroughly analyze all provided references (typically 3+ documents)
-         - Identify and incorporate key successful elements from each
-         - Combine complementary approaches when appropriate
-         - Preserve successful methodologies and processes
-         - Maintain similar depth of technical detail
-      
-      3. Content Adaptation:
-         - Paraphrase extensively while maintaining key concepts
-         - Restructure content to fit current context while preserving detail
-         - Combine insights from multiple references when relevant
-         - Maintain comprehensive coverage of important points
-         - Ensure all key elements from references are represented
-      
-      4. Quality Standards:
-         - Match or exceed reference material detail level
-         - Maintain consistent professional tone throughout
-         - Include specific examples and metrics
-         - Provide thorough methodology explanations
-         - Ensure comprehensive coverage of processes`,
+        Key Instructions:
+        - Generate detailed responses that match or exceed the depth of references
+        - Thoroughly analyze and incorporate approaches from all provided references
+        - Replace company names with ${CLIENT_COMPANY} throughout
+        - Maintain the extensive detail level present in reference materials
+        - Ensure comprehensive coverage of methodologies, processes, and outcomes
+        
+        Content Generation Rules:
+        1. Length and Depth:
+          - Aim for comprehensive responses that match reference length
+          - Include all relevant details, processes, and methodologies
+          - Maintain detailed explanations of approaches
+          - Provide thorough coverage of implementation steps
+          - Include specific metrics and examples where present in references
+        
+        2. Reference Utilization:
+          - Thoroughly analyze all provided references (typically 3+ documents)
+          - Identify and incorporate key successful elements from each
+          - Combine complementary approaches when appropriate
+          - Preserve successful methodologies and processes
+          - Maintain similar depth of technical detail
+        
+        3. Content Adaptation:
+          - Paraphrase extensively while maintaining key concepts
+          - Restructure content to fit current context while preserving detail
+          - Combine insights from multiple references when relevant
+          - Maintain comprehensive coverage of important points
+          - Ensure all key elements from references are represented
+        
+        4. Quality Standards:
+          - Match or exceed reference material detail level
+          - Maintain consistent professional tone throughout
+          - Include specific examples and metrics
+          - Provide thorough methodology explanations
+          - Ensure comprehensive coverage of processes`,
       },
       {
         role: "system",
@@ -102,16 +107,32 @@ export async function POST(req: Request) {
       role: "user",
       content: `Requirement: ${prompt}
       
-    Please generate a comprehensive response that:
-    1. Matches the depth and detail of reference materials (700+ words per reference)
-    2. Thoroughly incorporates approaches from all references
-    3. Replaces company names with ${CLIENT_COMPANY}
-    4. Maintains professional tone and technical detail
-    5. Provides comprehensive coverage of methodologies and processes`,
+      Please generate a comprehensive response that:
+      1. Matches the depth and detail of reference materials (1000+ words per reference)
+      2. Thoroughly incorporates approaches from all references
+      3. Replaces company names with ${CLIENT_COMPANY}
+      4. Maintains professional tone and technical detail
+      5. Provides comprehensive coverage of methodologies and processes
+      6. Includes specific metrics and examples where present in references
+      7. Suggestions for improving the methodology and comparison with other methodologies for pros and cons, should be a small remark at the end of the response do not use header md style`,
     };
 
-    // generate text based on the similarity
-    const result = await appAI.createCompletion([...coreMessages, userMessage]);
+    const userProvidedContext: CoreMessage = {
+      role: "user",
+      content: parsed["userProvidedContext"],
+    };
+
+    // prompt idea
+    // also suggest what should we do more to make the methodolgy better
+    // methodology suggestion also comparison methodolgy for pros and cons
+
+    const fullMessage = [
+      ...coreMessages,
+      userMessage,
+      parsed["userProvidedContext"] && userProvidedContext,
+    ];
+
+    const result = await appAI.createCompletion(fullMessage);
 
     return result.toDataStreamResponse();
   } catch (error) {
