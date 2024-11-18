@@ -122,14 +122,10 @@ export async function POST(req: Request) {
       content: parsed["userProvidedContext"],
     };
 
-    // prompt idea
-    // also suggest what should we do more to make the methodolgy better
-    // methodology suggestion also comparison methodolgy for pros and cons
-
     const fullMessage = [
       ...coreMessages,
       userMessage,
-      parsed["userProvidedContext"] && userProvidedContext,
+      ...(parsed["userProvidedContext"] === "" ? [] : [userProvidedContext]),
     ];
 
     const result = await appAI.createCompletion(fullMessage);
