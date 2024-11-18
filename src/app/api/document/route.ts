@@ -17,6 +17,8 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
+    console.log("GET PROPOSAL");
+
     const proposalList = await db
       .select({
         id: proposal.id,
