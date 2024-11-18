@@ -50,8 +50,8 @@ export class CustomAI {
       // prompt: text,
       messages: CoreMessage,
       maxTokens: 10000,
-      maxSteps: 5, // enable multi-step calls
-      experimental_continueSteps: true,
+      // maxSteps: 5, // enable multi-step calls
+      // experimental_continueSteps: true,
     });
   }
 
