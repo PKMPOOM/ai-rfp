@@ -1,3 +1,5 @@
+export const maxDuration = 60; // This function can run for a maximum of 5 seconds
+
 import { appAI } from "@/utils/openai";
 import { CoreMessage } from "ai";
 import { NextResponse } from "next/server";
