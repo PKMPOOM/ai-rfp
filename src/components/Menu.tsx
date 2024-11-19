@@ -82,6 +82,7 @@ const SideMenu = () => {
             <Skeleton />
           </div>
         ) : (
+          data &&
           data?.map((proposal) => {
             return (
               <div
