@@ -103,7 +103,7 @@ const QuestionPane = () => {
               },
             }}
           >
-            Add requirement
+            Add requirements
           </Dropdown.Button>
         </div>
 
