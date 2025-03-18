@@ -20,15 +20,12 @@ export async function POST(req: Request) {
     // use similarity as reference
     const vectorSearchResults = await vectorSearch(embedding);
 
-    // hard coded for now
-    const MY_COMPANY = "Insightrix Research Inc.";
-    const CLIENT_COMPANY = "SaskGaming";
 
     // prepare prompt
     const coreMessages: CoreMessage[] = [
       {
         role: "system",
-        content: `You are a writting proposal section for a ${MY_COMPANY} and you will use previous reference data from vector search`,
+        content: `You are a writting proposal section for a company and you will use previous reference data from vector search`,
       },
       {
         role: "system",
@@ -37,7 +34,7 @@ export async function POST(req: Request) {
         Key Instructions:
         - Generate detailed responses that match or exceed the depth of references
         - Thoroughly analyze and incorporate approaches from all provided references
-        - Replace company names with ${CLIENT_COMPANY} throughout
+        - Replace company names with correct company name throughout
         - Maintain the extensive detail level present in reference materials
         - Ensure comprehensive coverage of methodologies, processes, and outcomes
         
@@ -99,7 +96,7 @@ export async function POST(req: Request) {
          - Combine complementary elements effectively
       
       4. Company Name Handling:
-         - Replace all company-specific names with ${CLIENT_COMPANY}
+         - Replace all company-specific names with correct company name
          - Ensure grammatical correctness in replacements
          - Maintain consistent templating throughout
          - Preserve original context and meaning`,
@@ -113,7 +110,7 @@ export async function POST(req: Request) {
       Please generate a comprehensive response that:
       1. Matches the depth and detail of reference materials (1000+ words per reference)
       2. Thoroughly incorporates approaches from all references
-      3. Replaces company names with ${CLIENT_COMPANY}
+      3. Replaces company names with correct company name
       4. Maintains professional tone and technical detail
       5. Provides comprehensive coverage of methodologies and processes
       6. Includes specific metrics and examples where present in references
