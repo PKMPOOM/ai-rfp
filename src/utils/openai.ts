@@ -24,12 +24,12 @@ export class CustomAI {
       compatibility: "strict", // strict mode, enable when using the OpenAI API
     });
     this.textModel = model;
-    this.embedingsModel = model.embedding("text-embedding-ada-002");
+    this.embedingsModel = model.embedding("text-embedding-3-small");
   }
 
   async createEmbedding(text: string) {
     return embed({
-      model: this.textModel.embedding("text-embedding-ada-002"),
+      model: this.textModel.embedding("text-embedding-3-small"),
       value: text.replaceAll("\n", " "),
       maxRetries: 3,
     });
